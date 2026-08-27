@@ -119,6 +119,7 @@ input{font-size:16px;-webkit-user-select:text;user-select:text;}
 .pcname{font-weight:800;font-size:13px;margin-bottom:6px;}
 .mrow{display:flex;align-items:center;gap:8px;margin-bottom:5px;}
 .mlbl{width:52px;font-size:10px;color:var(--mut);font-weight:700;}
+.mtot{width:26px;text-align:right;font-size:13px;font-weight:800;color:var(--txt);}
 .mtrack{flex:1;height:12px;background:#2a2f47;border-radius:4px;overflow:hidden;}
 .mfill{height:100%;border-radius:4px;}
 .mval{width:40px;text-align:right;font-size:11px;font-weight:800;}
@@ -323,7 +324,7 @@ function renderJuego(){
   var sel=p.selected;
   h+='<div class="act"><div class="acthead">DETALLE de <span class="who'+(sel?"":" none")+'">'+(sel?"#"+(pById(sel).num||"?")+" "+pShort(sel):"toca un jugador")+'</span> <button class="chgbtn" id="subBtn">\u21c6 Cambio</button></div>';
   h+=grpRow("SAQUE",[["ace","Ace","grn"],["comp","Compl.","navy"],["perd","Perd.","red"]],sel);
-  h+=grpRow("RECEPCI\u00d3N",[["dpos","Doble +","blue"],["pos","Positiva","navy"],["neg","Negativa","red"]],sel);
+  h+=grpRow("PASE",[["dpos","Doble +","blue"],["pos","Positiva","navy"],["neg","Negativa","red"]],sel);
   h+='<div class="grp"><div class="glbl"></div>'+btn("atkE","Ataque","atkq",sel)+btn("atkP","Punto ataque","atkp",sel)+btn("blkP","Punto bloqueo","blkp",sel)+'</div>';
   h+='</div></div></div>';
   wrap.innerHTML=h;
@@ -376,8 +377,8 @@ function aggStats(){var ps={},rot=[0,1,2,3,4,5].map(function(){return {won:0,los
  S.archive.forEach(function(a){addP(a.pstats);addR(a.rotStats);}); if(S.play){addP(S.play.pstats);addR(S.play.rotStats);}
  return {ps:ps,rot:rot};}
 function pctv(n,d){return d>0?Math.round(n/d*100):null;}
-function mbar(label,pct,color){var w=(pct==null)?0:pct;var txt=(pct==null)?"\u2014":pct+"%";
- return '<div class="mrow"><span class="mlbl">'+label+'</span><div class="mtrack"><div class="mfill" style="width:'+w+'%;background:'+color+'"></div></div><span class="mval">'+txt+'</span></div>';}
+function mbar(label,total,pct,color){var w=(pct==null)?0:pct;var txt=(pct==null)?"\u2014":pct+"%";
+ return '<div class="mrow"><span class="mlbl">'+label+'</span><span class="mtot">'+total+'</span><div class="mtrack"><div class="mfill" style="width:'+w+'%;background:'+color+'"></div></div><span class="mval">'+txt+'</span></div>';}
 function renderStats(){var A=aggStats();var nSets=S.archive.length+(S.play?1:0);
  var any=A.rot.some(function(r){return r.won||r.lost;})||Object.keys(A.ps).length>0;
  if(!any){wrap.innerHTML='<div class="hint" style="padding:30px;text-align:center">A\u00fan no hay estad\u00edsticas. Registra acciones en la cancha.</div>';return;}
@@ -394,10 +395,10 @@ function renderStats(){var A=aggStats();var nSets=S.archive.length+(S.play?1:0);
  if(!ids.length)h+='<div class="hint">Sin acciones por jugador todav\u00eda.</div>';
  ids.forEach(function(id){var s=A.ps[id];var totS=s.ace+s.comp+s.perd,totR=s.dpos+s.pos+s.neg,totA=s.atkP+s.atkE;
   h+='<div class="pcard"><div class="pcname">#'+((pById(+id)||{}).num||"?")+' '+esc(pShort(+id))+'</div>';
-  h+=mbar("Saque",pctv(s.ace+s.comp,totS),"#4F7EF7");
-  h+=mbar("Recep.",pctv(s.dpos+s.pos,totR),"#3BA776");
-  h+=mbar("Ataque",pctv(s.atkP,totA),"#E0685F");
-  h+='<div class="pmini">Aces <b>'+s.ace+'</b> \u00b7 Pts ataque <b>'+s.atkP+'</b> \u00b7 Bloqueo <b>'+s.blkP+'</b> \u00b7 Err. saque <b>'+s.perd+'</b></div></div>';});
+  h+=mbar("Saque",totS,pctv(s.ace+s.comp,totS),"#4F7EF7");
+  h+=mbar("Pase",totR,pctv(s.dpos+s.pos,totR),"#3BA776");
+  h+=mbar("Ataque",totA,pctv(s.atkP,totA),"#E0685F");
+  h+='<div class="pmini">Aces <b>'+s.ace+'</b> \u00b7 Doble+ <b>'+s.dpos+'</b> \u00b7 Pos <b>'+s.pos+'</b> \u00b7 Neg <b>'+s.neg+'</b> \u00b7 Pts ataque <b>'+s.atkP+'</b> \u00b7 Bloqueo <b>'+s.blkP+'</b> \u00b7 Err. saque <b>'+s.perd+'</b></div></div>';});
  h+='</div></div></div>';wrap.innerHTML=h;}
 document.querySelectorAll(".tab").forEach(function(t){t.addEventListener("click",function(){tab=t.dataset.tab;render();});});
 function fit(){var st=document.getElementById("stage");if(!st)return;var s=Math.min(window.innerWidth/900,window.innerHeight/420);if(s>3)s=3;st.style.transform="translate(-50%,-50%) scale("+s+")";}
