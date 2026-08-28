@@ -377,8 +377,8 @@ function aggStats(){var ps={},rot=[0,1,2,3,4,5].map(function(){return {won:0,los
  S.archive.forEach(function(a){addP(a.pstats);addR(a.rotStats);}); if(S.play){addP(S.play.pstats);addR(S.play.rotStats);}
  return {ps:ps,rot:rot};}
 function pctv(n,d){return d>0?Math.round(n/d*100):null;}
-function mbar(label,total,pct,color){var w=(pct==null)?0:pct;var txt=(pct==null)?"\u2014":pct+"%";
- return '<div class="mrow"><span class="mlbl">'+label+'</span><span class="mtot">'+total+'</span><div class="mtrack"><div class="mfill" style="width:'+w+'%;background:'+color+'"></div></div><span class="mval">'+txt+'</span></div>';}
+function mbar(label,total,pct,color){var isN=(pct==null);var w=isN?0:pct;var txt=isN?"\u2014":pct+"%";var track=isN?"#2a2f47":"#E0685F";
+ return '<div class="mrow"><span class="mlbl">'+label+'</span><span class="mtot">'+total+'</span><div class="mtrack" style="background:'+track+'"><div class="mfill" style="width:'+w+'%;background:#3BA776"></div></div><span class="mval">'+txt+'</span></div>';}
 function renderStats(){var A=aggStats();var nSets=S.archive.length+(S.play?1:0);
  var any=A.rot.some(function(r){return r.won||r.lost;})||Object.keys(A.ps).length>0;
  if(!any){wrap.innerHTML='<div class="hint" style="padding:30px;text-align:center">A\u00fan no hay estad\u00edsticas. Registra acciones en la cancha.</div>';return;}
@@ -398,7 +398,7 @@ function renderStats(){var A=aggStats();var nSets=S.archive.length+(S.play?1:0);
   h+=mbar("Saque",totS,pctv(s.ace+s.comp,totS),"#4F7EF7");
   h+=mbar("Pase",totR,pctv(s.dpos+s.pos,totR),"#3BA776");
   h+=mbar("Ataque",totA,pctv(s.atkP,totA),"#E0685F");
-  h+='<div class="pmini">Aces <b>'+s.ace+'</b> \u00b7 Doble+ <b>'+s.dpos+'</b> \u00b7 Pos <b>'+s.pos+'</b> \u00b7 Neg <b>'+s.neg+'</b> \u00b7 Pts ataque <b>'+s.atkP+'</b> \u00b7 Bloqueo <b>'+s.blkP+'</b> \u00b7 Err. saque <b>'+s.perd+'</b></div></div>';});
+  h+='<div class="pmini">Aces <b>'+s.ace+'</b> \u00b7 Err. saque <b>'+s.perd+'</b> \u00b7 Doble+ <b>'+s.dpos+'</b> \u00b7 Pos <b>'+s.pos+'</b> \u00b7 Neg <b>'+s.neg+'</b> \u00b7 Pts ataque <b>'+s.atkP+'</b> \u00b7 Bloqueo <b>'+s.blkP+'</b></div></div>';});
  h+='</div></div></div>';wrap.innerHTML=h;}
 document.querySelectorAll(".tab").forEach(function(t){t.addEventListener("click",function(){tab=t.dataset.tab;render();});});
 function fit(){var st=document.getElementById("stage");if(!st)return;var s=Math.min(window.innerWidth/900,window.innerHeight/420);if(s>3)s=3;st.style.transform="translate(-50%,-50%) scale("+s+")";}
